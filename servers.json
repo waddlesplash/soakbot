@@ -1,0 +1,16 @@
+{
+  "irc.mozilla.org": [
+    {
+      "repo": "mozilla/pdf.js",
+      "channel": "#pdfjs"
+    }, {
+      "repo": "mozilla/shumway",
+      "channel": "#shumway"
+    }
+  ], "irc.freenode.net": [
+    {
+      "repo": "waddlesplash/ragingmidi",
+      "channel": "#ragingmidi"
+    }
+  ]
+}
