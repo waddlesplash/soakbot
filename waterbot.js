@@ -33,6 +33,7 @@ function startOnServer(server, channelsAndRepos) {
   var bot = new irc.Client(server, nick, {
     realName: 'https://github.com/waddlesplash/waterbot',
     port: 6697, /* SSL */
+    autoRejoin: false,
     secure: true,
     floodProtection: true,
     floodProtectionDelay: 300, /* yes, this is dangerous... */
