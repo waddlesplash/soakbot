@@ -1,10 +1,14 @@
 {
-    "name" : "waterbot",
-    "description" : "When you reference an issue (say '#1234') in an IRC channel, this bot posts the issue title and a link to that issue on GitHub.",
-    "version" : "0.0.1",
-    "author" : "waddlesplash",
-    "dependencies": {
-        "irc" : "~0.3.6",
-		"github": "~0.1.10"
-    }
+  "name" : "waterbot",
+  "description" : "When you reference an issue (say '#1234') in an IRC channel, this bot posts the issue title and a link to that issue on GitHub.",
+  "version" : "0.0.1",
+  "author" : "waddlesplash",
+  "dependencies": {
+    "irc" : "~0.3.6",
+    "github": "~0.1.10"
+  },
+  "engines": {
+    "node": "0.10.x",
+    "npm":  "1.2.x"
+  }
 }
