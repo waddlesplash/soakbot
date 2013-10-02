@@ -97,7 +97,7 @@ function startOnServer(server, channelsAndRepos) {
   
   // If you delete this, the whole app will crash on an error
   bot.addListener('error', function(msg) {
-      console.log('error: ', msg);
+    console.log('error: ', msg);
   });
 }
 
@@ -170,7 +170,7 @@ function handleChannel(bot, nick, channel, repoAndUser) {
         bot.part(channel);
         bot.removeListener('message' + channel, onChanMsg);
       } else {
-        bot.say(channel, from + ': leaving not allowed, this channel is in my "servers.json" file.');
+        bot.say(channel, from + ': leaving not allowed, chan is in "servers.json".');
       }
     }
   };
