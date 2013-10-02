@@ -28,13 +28,20 @@ for (var server in servers) {
   startOnServer(server, channelsAndRepos);  
 }
 
-function startOnServer(server, channelsAndRepos) {
+function startOnServer(servr, channelsAndRepos) {
+  var server; /* Use this for everything but connecting */
+  if(servr.indexOf('freenode') != -1) {
+    server = 'irc.freenode.net'; /* Allow other freenode servers */
+  } else {
+    server = servr;
+  }
+  
   /* What's the nick for this server?
    * Server "irc.freenode.net" becomes "irc_freenode_net_nick" */
   var nick = process.env[server.replace(/\./g,'_') + '_nick'];
   
   /* The Settings. Tweak as needed. */
-  var bot = new irc.Client(server, nick, {
+  var bot = new irc.Client(servr, nick, {
     realName: 'https://github.com/waddlesplash/waterbot',
     port: 6697, /* IRC over SSL */
     autoRejoin: false, /* Allows bot to be kicked. */
