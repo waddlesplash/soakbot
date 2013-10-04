@@ -85,7 +85,7 @@ function startOnServer(servr, channelsAndRepos) {
       var chanl = data[2], repo = data[3];
       if(chanl && (chanl.indexOf('#') == 0)) {
         if(!(chanl in bot.chans)) { // Ensure we aren't already there.
-          handleChannel(bot, nick, chanl, repo);
+          handleChannel(bot, nick, chanl, repo, true);
           bot.say(chan, from + ": Thanks for the invite!");
         } else {
           bot.say(chan, from + ": Thanks -- but I'm already there!");
@@ -109,8 +109,8 @@ function startOnServer(servr, channelsAndRepos) {
 }
 
 /* Per-channel functionality. */
-function handleChannel(bot, nick, channel, repoAndUser) {
-  var user, repo, canLeave = false, addedListener = false;
+function handleChannel(bot, nick, channel, repoAndUser, leave) {
+  var user, repo, canLeave = leave, addedListener = false;
   bot.join(channel);
   
   /* If the repo came from the JSON file, use that. If not,
@@ -177,7 +177,7 @@ function handleChannel(bot, nick, channel, repoAndUser) {
         bot.part(channel);
         bot.removeListener('message' + channel, onChanMsg);
       } else {
-        bot.say(channel, from + ': leaving not allowed, chan is in "servers.json".');
+        bot.say(channel, from + ': can\'t leave, because this channel is in "servers.json".');
       }
     }
   };
