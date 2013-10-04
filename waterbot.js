@@ -65,7 +65,9 @@ function startOnServer(servr, channelsAndRepos) {
   
   /* Join channels upon invitation. */
   bot.addListener('invite', function(channel, from, msg) {
-    handleChannel(bot, nick, channel);
+    if(!(chanl in bot.chans)) { // Ensure we aren't already there.
+      handleChannel(bot, nick, channel);
+    }
   });
 
   /* Global commands: can be executed in any channel. */
