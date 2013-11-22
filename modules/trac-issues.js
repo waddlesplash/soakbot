@@ -7,7 +7,7 @@
  *
  * SERVERS.JSON options
  * ====================
- * 
+ * "tracurl": root url of a Trac server, without the "http".
  */
 
 var http = require("http");

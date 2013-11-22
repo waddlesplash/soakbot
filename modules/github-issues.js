@@ -7,7 +7,7 @@
  *
  * SERVERS.JSON options
  * ====================
- * 
+ * "ghrepo": GitHub repository, e.g. "waddlesplash/waterbot".
  */
 
 var gha = require("github");
