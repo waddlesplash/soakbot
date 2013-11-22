@@ -74,7 +74,8 @@ exports.run = function(from, msg, channel, topic, bot, nick, configObj) {
     global.GHA.issues.getRepoIssue(
       {user: configObj.user, repo: configObj.repo, number: issues[i]}, function(err, data) {
         if(err != null) { return; }
-        bot.say(channel, "Issue "+data.number+": "+data.title+". "+data.html_url);
+        var str; if(data.html_url.indexOf("/pull/") != -1) { str = "Pull "; } else { str = "Issue "; }
+        bot.say(channel, str+data.number+": "+data.title+". "+data.html_url);
       });
   }
 };
