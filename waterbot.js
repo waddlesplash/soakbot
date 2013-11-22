@@ -63,35 +63,6 @@ function startOnServer(servr, channelsAndRepos) {
     }
   });
 
-  /* Global commands: can be executed in any channel. */
-  var globalCmds = function (from, chan, msg) {
-    if(chan == nick) { chan = from; } /* this is a PM. */
-    if((msg.indexOf(nick + ': join') == 0) ||
-       (msg.indexOf(nick + ': invite') == 0)) {
-      /* TODO: make this work again!
-      /* Join the specified channel.
-       * Syntax: "waterbot: invite #channel [your/repo]
-      var data = msg.split(' ');
-      var chanl = data[2], repo = data[3];
-      if(chanl && (chanl.indexOf('#') == 0)) {
-        if(!(chanl in bot.chans)) { // Ensure we aren't already there.
-          handleChannel(bot, nick, chanl, repo, true);
-          bot.say(chan, from + ": Thanks for the invite!");
-        } else {
-          bot.say(chan, from + ": Thanks -- but I'm already there!");
-        }
-      } else {
-        /* Where's the channel?
-        bot.say(chan, from + ': where\'s the channel?');
-      } */
-    }
-  };
-  
-  /* This triggers on PMs too. */
-  bot.addListener('message', function (from, chan, msg, raw) {
-    globalCmds(from, chan, msg);
-  });
-  
   // If you delete this, the whole app will crash on an error
   bot.addListener('error', function(msg) {
     console.log('error: ', msg);
@@ -124,16 +95,6 @@ function handleChannel(bot, nick, cfg, leave) {
       bot.say(channel, 'enabled modules: ' + configObj.modules);
       bot.say(channel, 'src code at https://github.com/waddlesplash/waterbot');
     }
-    /* TODO: make all this work again.
-    if((msg == nick + ': leave') || (msg == nick + ': part')) {
-      // We're not wanted here anymore. 
-      if(canLeave) {
-        bot.part(channel);
-        bot.removeListener('message' + channel, onChanMsg);
-      } else {
-        bot.say(channel, from + ': can\'t leave, because this channel is in "servers.json".');
-      }
-    } */
   };
   
   /* Load dem modules! */
