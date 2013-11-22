@@ -1,16 +1,19 @@
 {
   "irc.mozilla.org": [
     {
-      "repo": "mozilla/pdf.js",
-      "channel": "#pdfjs"
+      "channel": "#pdfjs",
+      "modules": "github-issues",
+      "ghrepo": "mozilla/pdf.js"
     }, {
-      "repo": "mozilla/shumway",
-      "channel": "#shumway"
+      "channel": "#shumway",
+      "modules": "github-issues",
+      "ghrepo": "mozilla/shumway"
     }
   ], "card.freenode.net": [
     {
-      "repo": "waddlesplash/ragingmidi",
-      "channel": "#ragingmidi"
+      "channel": "#ragingmidi",
+      "modules": "github-issues",
+      "ghrepo": "waddlesplash/ragingmidi"
     }
   ]
 }

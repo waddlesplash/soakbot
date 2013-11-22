@@ -1,26 +1,19 @@
-/* Waterbot - "What issue is that again?"
- *   It's like Firebot, but for GitHub repos.
+/* Waterbot - The Modular IRC Bot
+ *   Sorta like Hubot, but for IRC and JavaScript
+ *   instead of Campfire and CoffeeScript.
  *
- * MIT license.
+ * Copyright 2013 waddlesplash.
+ * Licensed under the MIT license.
  */
 
 var fs = require('fs');
 var irc = require("irc");
-var gha = require("github");
 var servers;
 
 /* Server list */
 servers = fs.readFileSync('servers.json', {'encoding': 'utf8'});
 if(!servers) { process.exit(1); }
 servers = JSON.parse(servers);
-
-/* GitHub API Setup */
-var GitHubApi = new gha({version: "3.0.0"});
-GitHubApi.authenticate({
-  type: "oauth",
-  token: process.env['github_access_token']
-});
-global.GHA = GitHubApi;
 
 /* Initiate: connect to all specified servers */
 for (var server in servers) {
@@ -59,7 +52,7 @@ function startOnServer(servr, channelsAndRepos) {
     }
     /* Actually connect to channels */
     for(var i in channelsAndRepos) {
-      handleChannel(bot, nick, channelsAndRepos[i].channel, channelsAndRepos[i].repo);
+      handleChannel(bot, nick, channelsAndRepos[i]);
     }
   });
   
@@ -73,16 +66,11 @@ function startOnServer(servr, channelsAndRepos) {
   /* Global commands: can be executed in any channel. */
   var globalCmds = function (from, chan, msg) {
     if(chan == nick) { chan = from; } /* this is a PM. */
-    if((msg == nick + ': about') ||
-       (msg == nick + ': help')) {
-      bot.say(chan, from + ': I am Waterbot. The Issue Guru.');
-      bot.say(chan, from + ': Ask me about the Issues.');
-      bot.say(chan, from + ': Say "#1" or "#2" and I shall diverge my knowledge.');
-      bot.say(chan, from + ': See https://github.com/waddlesplash/waterbot for more infos.');
-    } else if((msg.indexOf(nick + ': join') == 0) ||
-              (msg.indexOf(nick + ': invite') == 0)) {
+    if((msg.indexOf(nick + ': join') == 0) ||
+       (msg.indexOf(nick + ': invite') == 0)) {
+      /* TODO: make this work again!
       /* Join the specified channel.
-       * Syntax: "waterbot: invite #channel [your/repo] */
+       * Syntax: "waterbot: invite #channel [your/repo]
       var data = msg.split(' ');
       var chanl = data[2], repo = data[3];
       if(chanl && (chanl.indexOf('#') == 0)) {
@@ -93,9 +81,9 @@ function startOnServer(servr, channelsAndRepos) {
           bot.say(chan, from + ": Thanks -- but I'm already there!");
         }
       } else {
-        /* Where's the channel? */
-        bot.say(chan, from + ': I think you missed something. Like the channel, perhaps?');
-      }
+        /* Where's the channel?
+        bot.say(chan, from + ': where\'s the channel?');
+      } */
     }
   };
   
@@ -111,78 +99,49 @@ function startOnServer(servr, channelsAndRepos) {
 }
 
 /* Per-channel functionality. */
-function handleChannel(bot, nick, channel, repoAndUser, leave) {
-  var user, repo, canLeave = leave, addedListener = false;
+function handleChannel(bot, nick, cfg, leave) {
+  var configObj = cfg, channel, topic, modules = [],
+      addedListener = false;
+  channel = configObj.channel;
   bot.join(channel);
   
-  /* If the repo came from the JSON file, use that. If not,
-   * examine the channel topic and try to find a GitHub URL. */
-  if(repoAndUser) { 
-    user = repoAndUser.split('/')[0];
-    repo = repoAndUser.split('/')[1];
-  } else { // Extract user/repo from URL in channel topic
-    canLeave = true;
-    bot.addListener('topic', function (chan, topic, nick, msg) {
-      if(chan == channel) {
-        var ghUrls = [], match, didUrl = false,
-            pattern = /(https:\/\/github.com\/.+?)(\s|$)/g;
-        while(match = pattern.exec(topic)) {
-          if(match[1] && (ghUrls.indexOf(match[1]) == -1)) {
-            ghUrls.push(match[1]);
-          }
-        }
-        for(var i in ghUrls) {
-          /* Remove any commas. */
-          var url = ghUrls[i].split(',')[0].split('/');
-          user = url[3]; // user
-          repo = url[4]; // repo
-          if(!user || !repo) continue;
-          didUrl = true;
-          break;
-        }
-        if(!didUrl) {
-          bot.say(channel, "sorry, no GitHub URL found in topic -- parting.");
-          bot.part(channel);
-          if(addedListener) bot.removeListener('message' + channel, onChanMsg);
-        } else {
-          bot.say(channel, "using repo: "+user+'/'+repo);
-        }
-      }
-    });
-  }
+  bot.addListener('topic', function(chan, chanTopic, nick, msg) {
+    if(chan == channel) {
+      topic = chanTopic;
+    }
+  });
   
   var onChanMsg = function (from, msg) {
-    if(msg.match(/(^|\s)+(#(\d+)).*/)) {
-      /* Someone said something that had #nums in it! */
-      var issuePattern = /(^|\s)+((issue)?#(\d+))/g;
-      var issues = [], match;
-      while(match = issuePattern.exec(msg)) {
-        if(!isNaN(match[4]) &&
-           (issues.indexOf(match[4]) == -1)) {
-          /* Add the issue that wasn't already in the list
-           * to the list. */
-          issues.push(match[4]);
-        }
+    for(var i in modules) {
+      if(modules[i].shouldRun(msg, configObj)) {
+        modules[i].run(from, msg, channel, topic, bot, nick, configObj);
       }
-      
-      /* Get GitHub API for those issues. */
-      for(var i in issues) {
-        global.GHA.issues.getRepoIssue(
-            {user: user, repo: repo, number: issues[i]}, function(err, data) {
-              if(err != null) return;
-              bot.say(channel, "Issue "+data.number+": "+data.title+". "+data.html_url);
-            });
-      }
-    } else if((msg == nick + ': leave') || (msg == nick + ': part')) {
-      /* We're not wanted here anymore. */
+    }
+    
+    if((msg == nick + ': about') ||
+       (msg == nick + ': help')) {
+      bot.say(channel, 'I\'m the Modular JS-based bot. Operator: "waddlesplash".');
+      bot.say(channel, 'enabled modules: ' + configObj.modules);
+      bot.say(channel, 'src code at https://github.com/waddlesplash/waterbot');
+    }
+    /* TODO: make all this work again.
+    if((msg == nick + ': leave') || (msg == nick + ': part')) {
+      // We're not wanted here anymore. 
       if(canLeave) {
         bot.part(channel);
         bot.removeListener('message' + channel, onChanMsg);
       } else {
         bot.say(channel, from + ': can\'t leave, because this channel is in "servers.json".');
       }
-    }
+    } */
   };
+  
+  /* Load dem modules! */
+  var loadme = configObj.modules.split(" ");
+  for(var i in loadme) {
+    modules.push(require("./modules/"+loadme[i]));
+    modules[modules.length-1].globalInit();
+  }
 
   /* The above event loop is in a var = fn so we can detach
    * the event listener when we want to, as removeListener
