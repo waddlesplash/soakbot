@@ -44,7 +44,9 @@ exports.run = function(from, msg, channel, topic, bot, nick, configObj) {
         str += chunk;
       });
       response.on('end', function() {
-        var csv = str.split("\r\n")[1].split(','), say = "Ticket ";
+        var csv = str.split("\r\n")[1], say = "Ticket ";
+        if(!csv) { return; }
+        csv = csv.split(',');
         say += csv[0]+': '+csv[1]+'. '+'https://'+configObj.tracurl+'/ticket/'+csv[0];
         bot.say(channel, say);
       });
