@@ -56,6 +56,15 @@ function startOnServer(servr, channelsAndRepos) {
     }
   });
 
+  /* Give help when someone PMs the bot */
+  bot.addListener('pm', function(nik, msg, raw) {
+    if((msg == nick + ': about') || (msg == nick + ': help') ||
+       (msg == "about") || (msg == "help")) {
+      bot.say(nik, 'I\'m the Modular JS-based bot. Operator: "waddlesplash".');
+      bot.say(nik, 'src code at https://github.com/waddlesplash/waterbot');
+    }
+  });
+  
   // If you delete this, the whole app will crash on an error
   bot.addListener('error', function(msg) {
     console.log('error: ', msg);
