@@ -55,13 +55,6 @@ function startOnServer(servr, channelsAndRepos) {
       handleChannel(bot, nick, channelsAndRepos[i]);
     }
   });
-  
-  /* Join channels upon invitation. */
-  bot.addListener('invite', function(channel, from, msg) {
-    if(!(chanl in bot.chans)) { // Ensure we aren't already there.
-      handleChannel(bot, nick, channel);
-    }
-  });
 
   // If you delete this, the whole app will crash on an error
   bot.addListener('error', function(msg) {
