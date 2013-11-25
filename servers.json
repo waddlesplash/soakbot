@@ -11,6 +11,10 @@
     }
   ], "card.freenode.net": [
     {
+      "channel": "#haiku",
+      "modules": "trac-issues",
+      "tracurl": "dev.haiku-os.org"
+    }, {
       "channel": "#ragingmidi",
       "modules": "github-issues",
       "ghrepo": "waddlesplash/ragingmidi"
