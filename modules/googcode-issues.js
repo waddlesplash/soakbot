@@ -12,9 +12,6 @@
 
 var http = require("http");
 
-exports.globalInit = function() {
-};
-
 exports.shouldRun = function(msg, configObj) {
   /* Is there a #number in the message? */
   return msg.match(/(^|\s)+(#(\d+)).*/);

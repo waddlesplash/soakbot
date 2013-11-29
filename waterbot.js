@@ -102,8 +102,9 @@ function handleChannel(bot, nick, cfg, leave) {
   /* Load dem modules! */
   var loadme = configObj.modules.split(" ");
   for(var i in loadme) {
-    modules.push(require("./modules/"+loadme[i]));
-    modules[modules.length-1].globalInit();
+    var newMod = require("./modules/"+loadme[i]);
+    modules.push(newMod);
+    if("globalInit" in newMod) { newMod.globalInit(); }
   }
 
   /* The above event loop is in a var = fn so we can detach
