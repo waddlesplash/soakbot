@@ -13,7 +13,8 @@
     {
       "channel": "#haiku",
       "modules": "trac-issues",
-      "tracurl": "dev.haiku-os.org"
+      "tracurl": "dev.haiku-os.org",
+      "ignored": "HAIKU-Buildbot"
     }, {
       "channel": "#ragingmidi",
       "modules": "github-issues",

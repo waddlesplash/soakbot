@@ -77,6 +77,7 @@ function handleChannel(bot, nick, cfg, leave) {
       addedListener = false;
   channel = configObj.channel;
   bot.join(channel);
+  if(!("ignored" in configObj)) { configObj.ignored = ""; }
   
   bot.addListener('topic', function(chan, chanTopic, nick, msg) {
     if(chan == channel) {
@@ -85,6 +86,10 @@ function handleChannel(bot, nick, cfg, leave) {
   });
   
   var onChanMsg = function (from, msg) {
+    if(configObj.ignored.indexOf(from) != -1) {
+      return;
+    }
+    
     for(var i in modules) {
       if(modules[i].shouldRun(msg, configObj)) {
         modules[i].run(from, msg, channel, topic, bot, nick, configObj);
