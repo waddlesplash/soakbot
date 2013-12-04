@@ -14,11 +14,15 @@
       "channel": "#haiku",
       "modules": "trac-issues",
       "tracurl": "dev.haiku-os.org",
-      "ignored": "HAIKU-Buildbot"
+      "ignored": "HAIKU-Buildbot Not-002 Not-003"
     }, {
       "channel": "#ragingmidi",
       "modules": "github-issues",
       "ghrepo": "waddlesplash/ragingmidi"
+    }, {
+      "channel": "#sugar",
+      "modules": "trac-issues",
+      "tracurl": "bugs.sugarlabs.org"
     }
   ]
 }
