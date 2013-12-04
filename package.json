@@ -5,7 +5,8 @@
   "author" : "waddlesplash",
   "dependencies": {
     "irc" : "~0.3.6",
-    "github": "~0.1.10"
+    "github": "~0.1.10",
+    "cheerio": "~0.12.4"
   },
   "engines": {
     "node": "0.10.x",
