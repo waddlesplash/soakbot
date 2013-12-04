@@ -12,9 +12,9 @@
   ], "card.freenode.net": [
     {
       "channel": "#haiku",
-      "modules": "trac-issues",
+      "modules": "trac-issues gci-tasks",
       "tracurl": "dev.haiku-os.org",
-      "ignored": "HAIKU-Buildbot Not-002 Not-003"
+      "ignored": "HAIKU-Buildbot Not- irker-"
     }, {
       "channel": "#ragingmidi",
       "modules": "github-issues",
@@ -22,7 +22,8 @@
     }, {
       "channel": "#sugar",
       "modules": "trac-issues",
-      "tracurl": "bugs.sugarlabs.org"
+      "tracurl": "bugs.sugarlabs.org",
+      "ignored": "Not-"
     }
   ]
 }
