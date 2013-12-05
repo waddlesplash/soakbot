@@ -78,7 +78,7 @@ function handleChannel(bot, nick, cfg, leave) {
   channel = configObj.channel;
   bot.join(channel);
   if(!("ignored" in configObj)) { configObj.ignored = ""; }
-  configObj.ignored = configObj.ignored.split(" ");
+  configObj.ignored = configObj.ignored.toLowerCase().split(" ");
   
   bot.addListener('topic', function(chan, chanTopic, nick, msg) {
     if(chan == channel) {
@@ -88,7 +88,7 @@ function handleChannel(bot, nick, cfg, leave) {
   
   var onChanMsg = function (from, msg) {
     for(var i in configObj.ignored) {
-      if(from.indexOf(configObj.ignored[i]) != -1) {
+      if(from.toLowerCase().indexOf(configObj.ignored[i]) == 0) {
         return;
       }
     }

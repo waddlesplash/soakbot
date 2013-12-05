@@ -23,7 +23,7 @@
       "channel": "#sugar",
       "modules": "trac-issues",
       "tracurl": "bugs.sugarlabs.org",
-      "ignored": "Not-"
+      "ignored": "Not- GitHub sbbot"
     }
   ]
 }
