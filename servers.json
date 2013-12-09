@@ -12,13 +12,9 @@
   ], "card.freenode.net": [
     {
       "channel": "#haiku",
-      "modules": "trac-issues gci-tasks",
+      "modules": "gci-tasks",
       "tracurl": "dev.haiku-os.org",
       "ignored": "HAIKU-Buildbot Not- irker-"
-    }, {
-      "channel": "#ragingmidi",
-      "modules": "github-issues",
-      "ghrepo": "waddlesplash/ragingmidi"
     }, {
       "channel": "#sugar",
       "modules": "trac-issues",
