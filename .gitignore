@@ -3,5 +3,5 @@ node_modules
 # Use these files to store confidential info
 # and/or debugging settings/information
 config.json
-config2.json
+config.deployment.json
 config.debug.json
