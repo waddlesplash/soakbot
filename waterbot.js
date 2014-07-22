@@ -37,11 +37,11 @@ function startOnServer(serverSettings, serverURL, settings) {
   
   bot.addListener('registered', function(msg) {
     if("password" in serverSettings) {
-      bot.send('NickServ', 'identify', serverSettings.password);
+      bot.send('NickServ', 'identify', serverSettings.nick, serverSettings.password);
     }
 
     for(var i in serverSettings.channels) {
-      handleChannel(bot, serverSettings.nick, serverSettings.channels[i], settings);
+      handleChannel(bot, serverSettings.channels[i], serverSettings, settings);
     }
   });
 
@@ -53,6 +53,11 @@ function startOnServer(serverSettings, serverURL, settings) {
       bot.say(userNick, 'Source code & issue tracker at https://github.com/waddlesplash/waterbot');
     }
   });
+  bot.addListener('nick', function(oldNick, newNick) {
+    /* Somebody force-changed the bot's nickname... */
+    if(oldNick == serverSettings.nick)
+      serverSettings.nick = newNick;
+  });
   
   // If you delete this, the whole app will crash on an error
   bot.addListener('error', function(msg) {
@@ -61,7 +66,7 @@ function startOnServer(serverSettings, serverURL, settings) {
 }
 
 /* Per-channel functionality. */
-function handleChannel(bot, nick, channelSettings, globalSettings) {
+function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
   var channel = channelSettings.channel, topic, modules = {}, users = [];
 
   bot.join(channel);
@@ -82,12 +87,12 @@ function handleChannel(bot, nick, channelSettings, globalSettings) {
       }
     }
     
-    var parameters = {from: from, message: msg, channel: channel, topic: topic, bot: bot, nick: nick};
-    if((msg == nick + ': about') ||
-       (msg == nick + ': help')) {
+    var parameters = {from: from, message: msg, channel: channel, topic: topic, bot: bot, nick: serverSettings.nick};
+    if((msg == serverSettings.nick + ': about') ||
+      (msg == serverSettings.nick + ': help')) {
       bot.say(channel, "I'm a modular NodeJS-based IRC bot. Operator: 'waddlesplash'.");
       bot.say(channel, 'Enabled modules: ' + channelSettings.modules);
-      bot.say(channel, '(for help on a module, say "' + nick + ': help <module>".)');
+      bot.say(channel, '(for help on a module, say "' + serverSettings.nick + ': help <module>".)');
       bot.say(channel, 'Source code & issue tracker at https://github.com/waddlesplash/waterbot');
     } else if(msg.split(' ').length > 2) {
       if(msg.split(' ')[2] in modules)
