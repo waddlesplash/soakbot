@@ -37,6 +37,7 @@ function startOnServer(serverSettings, serverURL, settings) {
   
   bot.addListener('registered', function(msg) {
     if("password" in serverSettings) {
+      bot.send('NickServ', 'release', serverSettings.nick, serverSettings.password);
       bot.send('NickServ', 'identify', serverSettings.nick, serverSettings.password);
     }
 
