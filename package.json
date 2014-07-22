@@ -3,6 +3,10 @@
   "description" : "A modular NodeJS-based IRC bot.",
   "version" : "0.2.0",
   "author" : "waddlesplash",
+  "repository" : {
+    "type" : "git",
+    "url" : "http://github.com/waddlesplash/waterbot.git"
+  },
   "dependencies": {
     "irc" : "~0.3.7",
     "github": "~0.2.1",
