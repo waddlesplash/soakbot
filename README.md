@@ -5,7 +5,7 @@ A common one is issues. Here's an example of the GitHub issue module (others wor
 ```
 <waddlesplash> #1 #2
 <waterbot> Issue 1: BlahApp crashes on line BLAH. https://github.com/your/repo/issues/1
-<waterbot> Issue 2: Add "Blah blah" to blah.blah. https://github.com/your/repo/pull/2
+<waterbot> Pull 2: Add "Blah blah" to blah.blah. https://github.com/your/repo/pull/2
 ```
 
 It can handle multiple channels across multiple IRC servers in one instance on one thread.
