@@ -2,27 +2,26 @@
  *   When you reference a Trac issue in a channel,
  *   it spits out the name and url of the issue.
  *
- * Copyright 2013 waddlesplash.
+ * Copyright 2013-2014 Augustin Cavalier (waddlesplash).
  * Licensed under the MIT license.
  *
- * SERVERS.JSON options
+ * OPTIONS
  * ====================
- * "tracurl": root url of a Trac server, without the "http".
+ * Per-channel: "trac-url": root URL of a Trac server (including the protocol).
  */
 
 var http = require("http");
+var https = require("https");
 
-exports.shouldRun = function(msg, configObj) {
-  /* Is there a #number in the message? */
-  return msg.match(/(^|\s)+(#(\d+)).*/);
-};
+exports.onMessage = function(channelSettings, globalSettings, parameters) {
+  if(!'trac-url' in channelSettings)
+    return;
+  if(!parameters.message.match(/(^|\s)+(#(\d+)).*/))
+    return;
 
-exports.run = function(from, msg, channel, topic, bot, nick, configObj) {
-  if(!configObj.tracurl) { return; }
-  
   var issuePattern = /(^|\s)+((issue)?#(\d+))/g;
   var issues = [], match;
-  while(match = issuePattern.exec(msg)) {
+  while(match = issuePattern.exec(parameters.message)) {
     if(!isNaN(match[4]) && (issues.indexOf(match[4]) == -1)) {
       /* Add the issue that wasn't already in the list */
       issues.push(match[4]);
@@ -31,10 +30,6 @@ exports.run = function(from, msg, channel, topic, bot, nick, configObj) {
   
   /* Get issues using CSV */
   for(var i in issues) {
-    var options = {
-      host: configObj.tracurl,
-      path: '/ticket/'+issues[i]+'?format=csv'
-    };
     callback = function(response) {
       var str = '';
       response.on('data', function(chunk) {
@@ -42,12 +37,15 @@ exports.run = function(from, msg, channel, topic, bot, nick, configObj) {
       });
       response.on('end', function() {
         var csv = str.split("\r\n")[1], say = "Ticket ";
-        if(!csv) { return; }
+        if (!csv) return;
         csv = csv.split(',');
-        say += csv[0]+': '+csv[1]+'. '+'https://'+configObj.tracurl+'/ticket/'+csv[0];
-        bot.say(channel, say);
+        say += csv[0]+': '+csv[1]+'. '+channelSettings['trac-url']+'/ticket/'+csv[0];
+        parameters.bot.say(parameters.channel, say);
       });
     }
-    http.get(options, callback).end();
+    if(channelSettings['trac-url'].indexOf("https") == 0)
+      https.get(channelSettings['trac-url'] + '/ticket/'+issues[i]+'?format=csv', callback).end();
+    else
+      http.get(channelSettings['trac-url'] + '/ticket/'+issues[i]+'?format=csv', callback).end();
   }
 };

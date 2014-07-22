@@ -1,22 +1,18 @@
-/* Waterbot -- Module "google-melange"
- * Reference a google-melange url, get info!
+/* Waterbot -- Module "gci-tasks"
+ *   Spouts info about a Google Melange task when someone posts a URL to one.
  *
- * Copyright 2013 :Puckipedia.
+ * Copyright 2013 Puck Meerburg (puckipedia).
+ * Copyright 2013-2014 Augustin Cavalier (waddlesplash).
  * Licensed under the MIT license.
- *
  */
 
 var http = require("http");
-var cheerio = require ("cheerio");
+var cheerio = require("cheerio");
 
-exports.shouldRun = function(msg, configObj) {
-  return msg.match(/https?:\/\/(www\.)?google-melange(\.appspot)?\.com\/([^/]+)\/task\/view\/([^/]+)\/([^/]+)\/([0-9]+)/g);
-};
-
-exports.run = function(from, msg, channel, topic, bot, nick, configObj) {
+exports.onMessage = function(channelSettings, globalSettings, parameters) {
   var taskPattern = /https?:\/\/(www\.)?google-melange(\.appspot)?\.com\/([^/]+)\/task\/view\/([^/]+)\/([^/]+)\/([0-9]+)/g;
   var tasks = [], match;
-  while(match = taskPattern.exec(msg)) {
+  while(match = taskPattern.exec(parameters.message)) {
     tasks.push(match[0].replace(/https?:\/\//, "").split("/"));
   }
   for(var taski in tasks) {
@@ -28,7 +24,7 @@ exports.run = function(from, msg, channel, topic, bot, nick, configObj) {
     var callback = function(response) {
       var data = '';
 
-      //another chunk of data has been recieved, so append it to `str`
+      // another chunk of data has been recieved, so append it onto 'str'
       response.on('data', function (chunk) {
         data += chunk;
       });
@@ -48,10 +44,10 @@ exports.run = function(from, msg, channel, topic, bot, nick, configObj) {
           num: parseInt($(".time:not(.time-first) .number").text(), 10),
           unit: $(".time:not(.time-first) .cap").text()
         };
-        bot.say(channel, project+": "+title+" ("+status+")");
-        bot.say(channel, "Mentor"+(mentors.length > 1 ? "s" : "")+": "+mentors.join(", "));
+        parameters.bot.say(parameters.channel, project+": "+title+" ("+status+")");
+        parameters.bot.say(parameters.channel, "Mentor"+(mentors.length > 1 ? "s" : "")+": "+mentors.join(", "));
         if(!(isNaN(first.num) || isNaN(second.num)))
-          bot.say(channel, first.num+" "+first.unit+", "+second.num+" "+second.unit+" remaining");
+          parameters.bot.say(parameters.channel, first.num+" "+first.unit+", "+second.num+" "+second.unit+" remaining");
       });
     }
     http.request(options, callback).end(); 

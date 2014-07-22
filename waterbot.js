@@ -2,66 +2,55 @@
  *   Sorta like Hubot, but for IRC and JavaScript
  *   instead of Campfire and CoffeeScript.
  *
- * Copyright 2013 waddlesplash.
+ * Copyright 2013-2014 Augustin Cavalier (waddlesplash).
  * Licensed under the MIT license.
  */
 
 var fs = require('fs');
 var irc = require("irc");
-var servers;
+var config;
 
 /* Server list */
-servers = fs.readFileSync('servers.json', {'encoding': 'utf8'});
-if(!servers) { process.exit(1); }
-servers = JSON.parse(servers);
+config = fs.readFileSync('config.json', {'encoding': 'utf8'});
+if(!config) {
+  console.log("FATAL: No configuration file!");
+  process.exit(1);
+}
+config = JSON.parse(config);
 
 /* Initiate: connect to all specified servers */
-for (var server in servers) {
-  var channelsAndRepos = servers[server];
-  startOnServer(server, channelsAndRepos);  
+for (var URL in config.networks) {
+  var serverSettings = config.networks[URL];
+  startOnServer(serverSettings, URL, config.settings);  
 }
 
-function startOnServer(servr, channelsAndRepos) {
-  var server; /* Use this for everything but connecting */
-  if(servr.indexOf('freenode') != -1) {
-    server = 'irc.freenode.net'; /* Allow other freenode servers */
-  } else {
-    server = servr;
-  }
-  
-  /* What's the nick for this server?
-   * Server "irc.freenode.net" becomes "irc_freenode_net_nick" */
-  var nick = process.env[server.replace(/\./g,'_') + '_nick'];
-  
-  /* The Settings. Tweak as needed. */
-  var bot = new irc.Client(servr, nick, {
+function startOnServer(serverSettings, serverURL, settings) {
+  var bot = new irc.Client(serverURL, serverSettings.nick, {
     realName: 'https://github.com/waddlesplash/waterbot',
     port: 6697, /* IRC over SSL */
     autoRejoin: false, /* Allows bot to be kicked. */
     secure: true,
     floodProtection: true,
-    floodProtectionDelay: 300, /* yes, this is dangerous... */
+    floodProtectionDelay: 300,
     stripColors: true
   });
   
-  /* The Real Setup runs here after we get the "001" line. */
   bot.addListener('registered', function(msg) {
-    /* Identify via NickServ if there's a passwrd in the ENV. */
-    if(process.env[server.replace(/\./g,'_') + '_pass']) {
-      bot.send('NickServ', 'identify', process.env[server.replace(/\./g,'_') + '_pass']);
+    if("password" in serverSettings) {
+      bot.send('NickServ', 'identify', serverSettings.password);
     }
-    /* Actually connect to channels */
-    for(var i in channelsAndRepos) {
-      handleChannel(bot, nick, channelsAndRepos[i]);
+
+    for(var i in serverSettings.channels) {
+      handleChannel(bot, serverSettings.nick, serverSettings.channels[i], settings);
     }
   });
 
   /* Give help when someone PMs the bot */
-  bot.addListener('pm', function(nik, msg, raw) {
-    if((msg == nick + ': about') || (msg == nick + ': help') ||
+  bot.addListener('pm', function(userNick, msg, raw) {
+    if((msg == serverSettings.nick + ': about') || (msg == serverSettings.nick + ': help') ||
        (msg == "about") || (msg == "help")) {
-      bot.say(nik, 'I\'m the Modular JS-based bot. Operator: "waddlesplash".');
-      bot.say(nik, 'src code at https://github.com/waddlesplash/waterbot');
+      bot.say(userNick, 'I\'m a modular NodeJS-based IRC bot. Operator: "waddlesplash".');
+      bot.say(userNick, 'Source code & issue tracker at https://github.com/waddlesplash/waterbot');
     }
   });
   
@@ -72,53 +61,54 @@ function startOnServer(servr, channelsAndRepos) {
 }
 
 /* Per-channel functionality. */
-function handleChannel(bot, nick, cfg, leave) {
-  var configObj = cfg, channel, topic, modules = [],
-      addedListener = false;
-  channel = configObj.channel;
+function handleChannel(bot, nick, channelSettings, globalSettings) {
+  var channel = channelSettings.channel, topic, modules = {}, users = [];
+
   bot.join(channel);
-  if("ignored" in configObj) {
-    configObj.ignored = configObj.ignored.toLowerCase().split(" ");
+  if("ignored" in channelSettings) {
+    channelSettings.ignored = channelSettings.ignored.toLowerCase().split(" ");
   }
   
-  bot.addListener('topic', function(chan, chanTopic, nick, msg) {
+  bot.addListener('topic', function(chan, chanTopic, whoSetIt) {
     if(chan == channel) {
       topic = chanTopic;
     }
   });
   
-  var onChanMsg = function (from, msg) {
-    for(var i in configObj.ignored) {
-      if(('ignored' in configObj) && from.toLowerCase().indexOf(configObj.ignored[i]) == 0) {
+  var onMessage = function(from, msg) {
+    for(var i in channelSettings.ignored) {
+      if(('ignored' in channelSettings) && from.toLowerCase().indexOf(channelSettings.ignored[i]) == 0) {
         return;
       }
     }
     
-    for(var i in modules) {
-      if(modules[i].shouldRun(msg, configObj)) {
-        modules[i].run(from, msg, channel, topic, bot, nick, configObj);
-      }
-    }
-    
+    var parameters = {from: from, message: msg, channel: channel, topic: topic, bot: bot, nick: nick};
     if((msg == nick + ': about') ||
        (msg == nick + ': help')) {
-      bot.say(channel, 'I\'m the Modular JS-based bot. Operator: "waddlesplash".');
-      bot.say(channel, 'enabled modules: ' + configObj.modules);
-      bot.say(channel, 'src code at https://github.com/waddlesplash/waterbot');
+      bot.say(channel, "I'm a modular NodeJS-based IRC bot. Operator: 'waddlesplash'.");
+      bot.say(channel, 'Enabled modules: ' + channelSettings.modules);
+      bot.say(channel, '(for help on a module, say "' + nick + ': help <module>".)');
+      bot.say(channel, 'Source code & issue tracker at https://github.com/waddlesplash/waterbot');
+    } else if(msg.split(' ').length > 2) {
+      if(msg.split(' ')[2] in modules)
+        if('onHelp' in modules[msg.split(' ')[2]])
+          modules[msg.split(' ')[2]].onHelp(channelSettings, globalSettings, parameters);
+      else
+        bot.say(channel, from + ': that module is not loaded!');
+    } else {
+      for(var i in modules)
+        modules[i].onMessage(channelSettings, globalSettings, parameters);
     }
   };
   
-  /* Load dem modules! */
-  var loadme = configObj.modules.split(" ");
+  /* Load the modules! */
+  var loadme = channelSettings.modules.split(" ");
   for(var i in loadme) {
-    var newMod = require("./modules/"+loadme[i]);
-    modules.push(newMod);
-    if("globalInit" in newMod) { newMod.globalInit(); }
+    var module = require("./modules/" + loadme[i]);
+    modules[loadme[i]] = module;
+    if("onLoad" in module) 
+      module.onLoad(channelSettings, globalSettings);
   }
 
-  /* The above event loop is in a var = fn so we can detach
-   * the event listener when we want to, as removeListener
-   * requires the name of a function. */
-  bot.addListener('message' + channel, onChanMsg);
-  addedListener = true;
+  bot.addListener('message' + channel, onMessage);
 }

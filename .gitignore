@@ -2,5 +2,6 @@ node_modules
 
 # Use these files to store confidential info
 # and/or debugging settings/information
-ENV.txt
-servers2.json
+config.json
+config2.json
+config.debug.json

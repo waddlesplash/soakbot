@@ -1,15 +1,15 @@
 {
   "name" : "waterbot",
-  "description" : "When you reference an issue (say '#1234') in an IRC channel, this bot posts the issue title and a link to that issue on GitHub.",
-  "version" : "0.0.1",
+  "description" : "A modular NodeJS-based IRC bot.",
+  "version" : "0.2.0",
   "author" : "waddlesplash",
   "dependencies": {
-    "irc" : "~0.3.6",
-    "github": "~0.1.10",
-    "cheerio": "~0.12.4"
+    "irc" : "~0.3.7",
+    "github": "~0.2.1",
+    "cheerio": "~0.17.0"
   },
   "engines": {
     "node": "0.10.x",
-    "npm":  "1.2.x"
+    "npm":  "1.4.x"
   }
 }
