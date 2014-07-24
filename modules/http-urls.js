@@ -81,8 +81,10 @@ exports.onMessage = function(channelSettings, globalSettings, parameters) {
         if(pos == -1) return;
 
         title = title.slice(0, pos);
-        parameters.bot.say(parameters.channel, url.replace("https://", '').replace("http://", '').slice(0, 10) 
-                                               + "..." + url.slice(-6) + ': ' + htmlspecialchars_decode(title.trim()));
+        var prepend = '';
+        if(urls.length > 1)
+          prepend = url.replace("https://", '').replace("http://", '').slice(0, 10) + "..." + url.slice(-6) + ': ';
+        parameters.bot.say(parameters.channel, prepend + htmlspecialchars_decode(title.trim()));
       }
       response.on('data', function (chunk) {
         data += chunk;
