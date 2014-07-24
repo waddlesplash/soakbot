@@ -26,15 +26,15 @@ exports.onMessage = function(channelSettings, globalSettings, parameters) {
     var callback = function(response) {
       var data = '';
       function findTitle() {
-        var pos = data.indexOf("<title>") + "<title>".length;
-        if(pos == -1) {
-          console.log("No title found for "+ url +"");
-          return;
-        } else {
-          var title = data.slice(pos);
-          title = title.slice(0, title.indexOf("</title"));
-          parameters.bot.say(parameters.channel, url + ': ' + title.trim());
-        }
+        var pos = data.toLowerCase().indexOf("<title>") + "<title>".length;
+        if(pos == -1) return;
+        
+        var title = data.slice(pos);
+        pos = title.toLowerCase().indexOf("</title");
+        if(pos == -1) return;
+
+        title = title.slice(0, pos);
+        parameters.bot.say(parameters.channel, "..." + url.slice(-10) + ': ' + title.trim());
       }
       response.on('data', function (chunk) {
         data += chunk;
