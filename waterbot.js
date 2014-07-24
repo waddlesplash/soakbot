@@ -61,9 +61,9 @@ function startOnServer(serverSettings, serverURL, settings) {
   });
   
   // If you delete this, the whole app will crash on an error
-  bot.addListener('error', function(msg) {
-    console.log('error: ', msg);
-  });
+  process.on('uncaughtException', function (err) {
+    console.log(err);
+  }); 
 }
 
 /* Per-channel functionality. */
@@ -88,7 +88,8 @@ function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
       }
     }
     
-    var parameters = {from: from, message: msg, channel: channel, topic: topic, bot: bot, nick: serverSettings.nick};
+    var parameters = {from: from, message: msg, originalMessage: msg, channel: channel, topic: topic, bot: bot, nick: serverSettings.nick};
+
     if((msg == serverSettings.nick + ': about') ||
       (msg == serverSettings.nick + ': help')) {
       bot.say(channel, "I'm a modular NodeJS-based IRC bot. Operator: 'waddlesplash'.");
