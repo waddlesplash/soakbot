@@ -16,6 +16,10 @@ exports.onMessage = function(channelSettings, globalSettings, parameters) {
     tasks.push(match[0].replace(/https?:\/\//, "").split("/"));
   }
   for(var taski in tasks) {
+    // Remove URLs from the message so other modules don't do stuff with them
+    parameters.message.replace(new RegExp("http://" + tasks[taski].join("/"), 'g'), '');
+    parameters.message.replace(new RegExp("https://" + tasks[taski].join("/"), 'g'), '');
+    
     var task = tasks[taski];
     var options = {
       host: task[0],
