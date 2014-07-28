@@ -37,7 +37,6 @@ exports.onMessage = function(channelSettings, globalSettings, parameters) {
       channelSettings.githubUser = channelSettings['github-repo'].split('/')[0];
       channelSettings.githubRepo = channelSettings['github-repo'].split('/')[1];
     } else {
-      channelSettings.canLeave = true;
       var ghUrls = [], match, didUrl = false,
       pattern = /(https:\/\/github.com\/.+?)(\s|$)/g;
       while(match = pattern.exec(parameters.topic)) {
@@ -54,7 +53,8 @@ exports.onMessage = function(channelSettings, globalSettings, parameters) {
         didUrl = true;
         break;
       }
-      if(!didUrl) { return; }
+      if(!didUrl)
+        return;
     }
   }
   
@@ -70,9 +70,16 @@ exports.onMessage = function(channelSettings, globalSettings, parameters) {
   /* Get issues using GitHub API. */
   for(var i in issues) {
     global.GHA.issues.getRepoIssue(
-      {user: channelSettings.githubUser, repo: channelSettings.githubRepo, number: issues[i]}, function(err, data) {
-        if(err != null) { return; }
-        var str; if(data.html_url.indexOf("/pull/") != -1) { str = "Pull "; } else { str = "Issue "; }
+      { user: channelSettings.githubUser, repo: channelSettings.githubRepo, number: issues[i] }, function(err, data) {
+        if(err != null) {
+          console.log(err);
+          return;
+        }
+        var str;
+        if(data.html_url.indexOf("/pull/") != -1)
+          str = "Pull ";
+        else
+          str = "Issue ";
         parameters.bot.say(parameters.channel, str+data.number+": "+data.title+". "+data.html_url);
       });
   }
