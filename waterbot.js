@@ -82,9 +82,10 @@ function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
   });
   
   var onMessage = function(from, msg) {
-    for(var i in channelSettings.ignored) {
-      if(('ignored' in channelSettings) && from.toLowerCase().indexOf(channelSettings.ignored[i]) == 0) {
-        return;
+    if('ignored' in channelSettings) {
+      for(var i in channelSettings.ignored) {
+        if(from.toLowerCase().indexOf(channelSettings.ignored[i]) == 0)
+          return;
       }
     }
     
@@ -94,14 +95,7 @@ function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
       (msg == serverSettings.nick + ': help')) {
       bot.say(channel, "I'm a modular NodeJS-based IRC bot. Operator: 'waddlesplash'.");
       bot.say(channel, 'Enabled modules: ' + channelSettings.modules);
-      bot.say(channel, '(for help on a module, say "' + serverSettings.nick + ': help <module>".)');
       bot.say(channel, 'Source code & issue tracker at https://github.com/waddlesplash/waterbot');
-    } else if(msg.split(' ').length > 2) {
-      if(msg.split(' ')[2] in modules)
-        if('onHelp' in modules[msg.split(' ')[2]])
-          modules[msg.split(' ')[2]].onHelp(channelSettings, globalSettings, parameters);
-      else
-        bot.say(channel, from + ': that module is not loaded!');
     } else {
       for(var i in modules)
         modules[i].onMessage(channelSettings, globalSettings, parameters);
