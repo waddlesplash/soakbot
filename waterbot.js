@@ -6,6 +6,11 @@
  * Licensed under the MIT license.
  */
 
+// Catch-all for exceptions
+process.on('uncaughtException', function (err) {
+  console.log(err);
+}); 
+
 var fs = require('fs');
 var irc = require("irc");
 var config;
@@ -59,11 +64,6 @@ function startOnServer(serverSettings, serverURL, settings) {
     if(oldNick == serverSettings.nick)
       serverSettings.nick = newNick;
   });
-  
-  // If you delete this, the whole app will crash on an error
-  process.on('uncaughtException', function (err) {
-    console.log(err);
-  }); 
 }
 
 /* Per-channel functionality. */
