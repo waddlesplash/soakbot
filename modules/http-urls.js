@@ -25,7 +25,7 @@ function unHTMLify(string) {
 exports.onMessage = function(channelSettings, globalSettings, parameters) {
   var urls = [], match;
   var regexp = /(https?:\/\/[^\s]+)/g;
-  console.log(parameters.message);
+
   while(matches = regexp.exec(parameters.message)) {
     if((matches[0].indexOf("127.0.0.1") == -1) && (matches[0].indexOf("localhost") == -1))
       urls.push(matches[0]);
