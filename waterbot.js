@@ -109,14 +109,14 @@ function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
   };
   
   /* Load the modules! */
-  var loadme = channelSettings.modules.split(" ");
-  for(var i in loadme) {
-    if(loadme[i].length < 1 || !fs.existsSync("./modules/" + loadme[i]))
-      continue;
-    var module = require("./modules/" + loadme[i]);
-    modules[loadme[i]] = module;
-    if("onLoad" in module) 
-      module.onLoad(channelSettings, globalSettings);
+  if(channelSettings.modules.length > 1) {
+    var loadme = channelSettings.modules.split(" ");
+    for(var i in loadme) {
+      var module = require("./modules/" + loadme[i]);
+      modules[loadme[i]] = module;
+      if("onLoad" in module) 
+        module.onLoad(channelSettings, globalSettings);
+    }
   }
 
   bot.addListener('message' + channel, onMessage);
