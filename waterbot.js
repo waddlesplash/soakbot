@@ -111,7 +111,7 @@ function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
   /* Load the modules! */
   var loadme = channelSettings.modules.split(" ");
   for(var i in loadme) {
-    if(!fs.existsSync("./modules/" + loadme[i]))
+    if(loadme[i].length < 1 || !fs.existsSync("./modules/" + loadme[i]))
       continue;
     var module = require("./modules/" + loadme[i]);
     modules[loadme[i]] = module;
