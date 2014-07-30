@@ -18,6 +18,7 @@ if(!which('git')) {
   exit(1);
 } else if(process.argv[2] == undefined) {
   echo('You must pass a HerokuApp name as an argument.');
+  exit(1);
 }
 
 echo("Copying files...");
