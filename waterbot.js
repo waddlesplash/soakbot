@@ -13,6 +13,7 @@ process.on('uncaughtException', function (err) {
 
 var fs = require('fs');
 var irc = require("irc");
+var admin = require("./modules/admin.js");
 var config;
 
 /* Server list */
@@ -36,7 +37,7 @@ function startOnServer(serverSettings, serverURL, settings) {
     autoRejoin: false, /* Allows bot to be kicked. */
     secure: true,
     floodProtection: true,
-    floodProtectionDelay: 300,
+    floodProtectionDelay: 500,
     stripColors: true
   });
   
@@ -55,8 +56,11 @@ function startOnServer(serverSettings, serverURL, settings) {
   bot.addListener('pm', function(userNick, msg, raw) {
     if((msg == serverSettings.nick + ': about') || (msg == serverSettings.nick + ': help') ||
        (msg == "about") || (msg == "help")) {
-      bot.say(userNick, 'I\'m a modular NodeJS-based IRC bot. Operator: "waddlesplash".');
+      bot.say(channel, "I'm a modular NodeJS-based IRC bot. Operator(s): " + globalSettings.operators.join(', ') + ".");
       bot.say(userNick, 'Source code & issue tracker at https://github.com/waddlesplash/waterbot');
+    } else if(globalSettings.operators.indexOf(userNick) != -1) {
+      var parameters = {from: userNick, message: msg, channel: userNick, topic: '', bot: bot, nick: serverSettings.nick};
+      admin.onMessage(parameters);
     }
   });
   bot.addListener('nick', function(oldNick, newNick) {
@@ -93,10 +97,12 @@ function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
 
     if((msg == serverSettings.nick + ': about') ||
       (msg == serverSettings.nick + ': help')) {
-      bot.say(channel, "I'm a modular NodeJS-based IRC bot. Operator: 'waddlesplash'.");
-      bot.say(channel, 'Enabled modules: ' + channelSettings.modules);
+      bot.say(channel, "I'm a modular NodeJS-based IRC bot. Operator(s): " + globalSettings.operators.join(', ') + ".");
       bot.say(channel, 'Source code & issue tracker at https://github.com/waddlesplash/waterbot');
+      bot.say(channel, 'Enabled modules: ' + channelSettings.modules);
     } else {
+      if(globalSettings.operators.indexOf(from) != -1)
+        admin.onMessage(parameters);
       for(var i in modules)
         modules[i].onMessage(channelSettings, globalSettings, parameters);
     }

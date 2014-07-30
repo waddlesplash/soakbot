@@ -1,6 +1,7 @@
 {
   "settings": {
-    "github-token": "000000000000000000000000000000000000000"
+    "github-token": "000000000000000000000000000000000000000",
+    "operators": ["waddlesplash", "wadlspl"]
   },
   "networks": {
     "card.freenode.net": {
