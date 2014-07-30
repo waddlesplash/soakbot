@@ -22,7 +22,7 @@ exports.onMessage = function(parameters) {
   if(trimmed.indexOf("$(") == 0) {
     var cmd = trimmed.substring(2, trimmed.length - 1);
     exec(cmd, puts);
-  } else if(trimmed.toLowerCase().indexOf("die!")) {
+  } else if(trimmed.toLowerCase().indexOf("die") == 0) {
     process.exit(1);
   }
 };
