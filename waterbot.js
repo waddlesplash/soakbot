@@ -30,7 +30,7 @@ for (var URL in config.networks) {
   startOnServer(serverSettings, URL, config.settings);  
 }
 
-function startOnServer(serverSettings, serverURL, settings) {
+function startOnServer(serverSettings, serverURL, globalSettings) {
   var bot = new irc.Client(serverURL, serverSettings.nick, {
     realName: 'https://github.com/waddlesplash/waterbot',
     port: 6697, /* IRC over SSL */
@@ -48,7 +48,7 @@ function startOnServer(serverSettings, serverURL, settings) {
     }
 
     for(var i in serverSettings.channels) {
-      handleChannel(bot, serverSettings.channels[i], serverSettings, settings);
+      handleChannel(bot, serverSettings.channels[i], serverSettings, globalSettings);
     }
   });
 
