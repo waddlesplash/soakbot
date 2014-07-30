@@ -10,8 +10,12 @@ var exec = require('child_process').exec;
 
 exports.onMessage = function(parameters) {
   function puts(error, stdout, stderr) {
-    parameters.bot.say(parameters.channel, stderr);
-    parameters.bot.say(parameters.channel, stdout);
+    var lineCount = (stdout.match(/\n/g)||[]).length + (stderr.match(/\n/g)||[]).length;
+    if(lineCount < 15) {
+      parameters.bot.say(parameters.channel, stderr);
+      parameters.bot.say(parameters.channel, stdout);
+    } else
+      parameters.bot.say(parameters.channel, "Command output too long (" + lineCount + " lines)!");
   }
   
   var trimmed = parameters.message.trim();
