@@ -8,7 +8,7 @@
 
 // Catch-all for exceptions
 process.on('uncaughtException', function (err) {
-  console.log(err);
+  console.trace(err);
 }); 
 
 var fs = require('fs');
