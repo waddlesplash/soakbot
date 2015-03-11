@@ -30,7 +30,9 @@ for (var URL in config.networks) {
 }
 
 function startOnServer(serverSettings, serverURL, globalSettings) {
-  var bot = new irc.Client(serverURL, serverSettings.nick, {
+  var tempNick = "skbot" + Math.floor(Math.random()*1000);
+  var bot = new irc.Client(serverURL, tempNick, {
+    userName: 'soakbot',
     realName: 'https://github.com/waddlesplash/soakbot',
     port: 6697, /* IRC over SSL */
     autoRejoin: false, /* Allows bot to be kicked. */
@@ -44,6 +46,7 @@ function startOnServer(serverSettings, serverURL, globalSettings) {
     if ("password" in serverSettings) {
       bot.say("NickServ", "release " + serverSettings.nick + " " + serverSettings.password);
       bot.say("NickServ", "identify " + serverSettings.nick + " " +  serverSettings.password);
+      bot.send("NICK", serverSettings.nick);
     }
 
     for (var i in serverSettings.channels) {
@@ -52,17 +55,22 @@ function startOnServer(serverSettings, serverURL, globalSettings) {
   });
 
   /* Give help when someone PMs the bot */
-  bot.on('pm', function(userNick, msg, raw) {
+  bot.on('pm', function(nick, msg, raw) {
     if ((msg == serverSettings.nick + ': about') || (msg == serverSettings.nick + ': help') ||
        (msg == "about") || (msg == "help")) {
-      bot.say(channel, "I'm a modular NodeJS-based IRC bot. Operator(s): " + globalSettings.operators.join(', ') + ".");
-      bot.say(userNick, 'Source code & issue tracker at https://github.com/waddlesplash/soakbot');
+      bot.say(nick, "I'm a modular NodeJS-based IRC bot. Operator(s): " +
+        globalSettings.operators.join(', ') + ".");
+      bot.say(nick, 'Source code & issue tracker at https://github.com/waddlesplash/soakbot');
+    } else {
+      console.log("WARN: " + nick + " msg'd me: \"" + msg + '"');
     }
   });
-  bot.on('nick', function(oldNick, newNick) {
-    /* Somebody force-changed the bot's nickname... */
-    if (oldNick == serverSettings.nick)
-      serverSettings.nick = newNick;
+  bot.on('notice', function(nick, to, msg, raw) {
+    console.log("WARN: " + nick + " notice'd me: \"" + msg + '"');
+  });
+
+  bot.on('nick', function (oldNick, newNick) {
+    serverSettings.nick = newNick;
   });
 }
 
