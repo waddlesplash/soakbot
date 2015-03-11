@@ -17,7 +17,7 @@ var config;
 
 /* Server list */
 config = fs.readFileSync('config.json', {'encoding': 'utf8'});
-if(!config) {
+if (!config) {
   console.log("FATAL: No configuration file!");
   process.exit(1);
 }
@@ -40,28 +40,28 @@ function startOnServer(serverSettings, serverURL, globalSettings) {
     stripColors: true
   });
 
-  bot.addListener('registered', function(msg) {
-    if("password" in serverSettings) {
+  bot.on('registered', function(msg) {
+    if ("password" in serverSettings) {
       bot.say("NickServ", "release " + serverSettings.nick + " " + serverSettings.password);
       bot.say("NickServ", "identify " + serverSettings.nick + " " +  serverSettings.password);
     }
 
-    for(var i in serverSettings.channels) {
+    for (var i in serverSettings.channels) {
       handleChannel(bot, serverSettings.channels[i], serverSettings, globalSettings);
     }
   });
 
   /* Give help when someone PMs the bot */
-  bot.addListener('pm', function(userNick, msg, raw) {
-    if((msg == serverSettings.nick + ': about') || (msg == serverSettings.nick + ': help') ||
+  bot.on('pm', function(userNick, msg, raw) {
+    if ((msg == serverSettings.nick + ': about') || (msg == serverSettings.nick + ': help') ||
        (msg == "about") || (msg == "help")) {
       bot.say(channel, "I'm a modular NodeJS-based IRC bot. Operator(s): " + globalSettings.operators.join(', ') + ".");
       bot.say(userNick, 'Source code & issue tracker at https://github.com/waddlesplash/soakbot');
     }
   });
-  bot.addListener('nick', function(oldNick, newNick) {
+  bot.on('nick', function(oldNick, newNick) {
     /* Somebody force-changed the bot's nickname... */
-    if(oldNick == serverSettings.nick)
+    if (oldNick == serverSettings.nick)
       serverSettings.nick = newNick;
   });
 }
@@ -71,47 +71,47 @@ function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
   var channel = channelSettings.channel, topic, modules = {}, users = [];
 
   bot.join(channel);
-  if("ignored" in channelSettings) {
+  if ("ignored" in channelSettings) {
     channelSettings.ignored = channelSettings.ignored.toLowerCase().split(" ");
   }
 
-  bot.addListener('topic', function(chan, chanTopic, whoSetIt) {
-    if(chan == channel) {
+  bot.on('topic', function(chan, chanTopic, whoSetIt) {
+    if (chan == channel) {
       topic = chanTopic;
     }
   });
 
   var onMessage = function(from, msg) {
-    if('ignored' in channelSettings) {
-      for(var i in channelSettings.ignored) {
-        if(from.toLowerCase().indexOf(channelSettings.ignored[i]) == 0)
+    if ('ignored' in channelSettings) {
+      for (var i in channelSettings.ignored) {
+        if (from.toLowerCase().indexOf(channelSettings.ignored[i]) == 0)
           return;
       }
     }
 
     var parameters = {from: from, message: msg, originalMessage: msg, channel: channel, topic: topic, bot: bot, nick: serverSettings.nick};
 
-    if((msg == serverSettings.nick + ': about') ||
+    if ((msg == serverSettings.nick + ': about') ||
       (msg == serverSettings.nick + ': help')) {
       bot.say(channel, "I'm a modular NodeJS-based IRC bot. Operator(s): " + globalSettings.operators.join(', ') + ".");
       bot.say(channel, 'Source code & issue tracker at https://github.com/waddlesplash/soakbot');
       bot.say(channel, 'Enabled modules: ' + channelSettings.modules);
     } else {
-      for(var i in modules)
+      for (var i in modules)
         modules[i].onMessage(channelSettings, globalSettings, parameters);
     }
   };
 
   /* Load the modules! */
-  if(channelSettings.modules.length > 1) {
+  if (channelSettings.modules.length > 1) {
     var loadme = channelSettings.modules.split(" ");
-    for(var i in loadme) {
+    for (var i in loadme) {
       var module = require("./modules/" + loadme[i]);
       modules[loadme[i]] = module;
-      if("onLoad" in module)
+      if ("onLoad" in module)
         module.onLoad(channelSettings, globalSettings);
     }
   }
 
-  bot.addListener('message' + channel, onMessage);
+  bot.on('message' + channel, onMessage);
 }

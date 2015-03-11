@@ -14,22 +14,22 @@ var http = require("http");
 var https = require("https");
 
 exports.onMessage = function(channelSettings, globalSettings, parameters) {
-  if(!'trac-url' in channelSettings)
+  if (!'trac-url' in channelSettings)
     return;
-  if(!parameters.message.match(/(^|\s)+(#(\d+)).*/))
+  if (!parameters.message.match(/(^|\s)+(#(\d+)).*/))
     return;
 
   var issuePattern = /(^|\s)+((issue)?#(\d+))/g;
   var issues = [], match;
   while(match = issuePattern.exec(parameters.message)) {
-    if(!isNaN(match[4]) && (issues.indexOf(match[4]) == -1)) {
+    if (!isNaN(match[4]) && (issues.indexOf(match[4]) == -1)) {
       /* Add the issue that wasn't already in the list */
       issues.push(match[4]);
     }
   }
   
   /* Get issues using CSV */
-  for(var i in issues) {
+  for (var i in issues) {
     callback = function(response) {
       var str = '';
       response.on('data', function(chunk) {
@@ -43,7 +43,7 @@ exports.onMessage = function(channelSettings, globalSettings, parameters) {
         parameters.bot.say(parameters.channel, say);
       });
     }
-    if(channelSettings['trac-url'].indexOf("https") == 0)
+    if (channelSettings['trac-url'].indexOf("https") == 0)
       https.get(channelSettings['trac-url'] + '/ticket/'+issues[i]+'?format=csv', callback).end();
     else
       http.get(channelSettings['trac-url'] + '/ticket/'+issues[i]+'?format=csv', callback).end();

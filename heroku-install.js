@@ -10,13 +10,13 @@
  */
 require('shelljs/global');
 
-if(!which('git')) {
+if (!which('git')) {
   echo('This script requires git to be in your PATH.');
   exit(1);
-} else if(!which('heroku')) {
+} else if (!which('heroku')) {
   echo('This script requires the Heroku Toolbelt to be in your PATH.');
   exit(1);
-} else if(process.argv[2] == undefined) {
+} else if (process.argv[2] == undefined) {
   echo('You must pass a HerokuApp name as an argument.');
   exit(1);
 }
@@ -46,7 +46,7 @@ cd('heroku-build'); {
   echo("Done!");
 } cd('..');
 
-if((process.argv[3] != "--save-temporary") &&
+if ((process.argv[3] != "--save-temporary") &&
    (process.argv[3] != "-t")) {
   rm('-rf', 'heroku-build');
 }

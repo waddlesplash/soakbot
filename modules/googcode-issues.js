@@ -13,21 +13,21 @@
 var http = require("http");
 
 exports.onMessage = function(channelSettings, globalSettings, parameters) {
-  if(!parameters.message.match(/(^|\s)+(#(\d+)).*/))
+  if (!parameters.message.match(/(^|\s)+(#(\d+)).*/))
     return;
-  if(!channelSettings['google-code-project']) { return; }
+  if (!channelSettings['google-code-project']) { return; }
   
   var issuePattern = /(^|\s)+((issue)?#(\d+))/g;
   var issues = [], match;
   while(match = issuePattern.exec(parameters.message)) {
-    if(!isNaN(match[4]) && (issues.indexOf(match[4]) == -1)) {
+    if (!isNaN(match[4]) && (issues.indexOf(match[4]) == -1)) {
       /* Add the issue that wasn't already in the list */
       issues.push(match[4]);
     }
   }
   
   /* Get issues using CSV */
-  for(var i in issues) {
+  for (var i in issues) {
     var options = {
       host: 'code.google.com',
       path: '/p/'+channelSettings['google-code-project']+'/issues/csv?can=1&q=id%3A'+issues[i]+'&colspec=ID%20Summary'
@@ -39,7 +39,7 @@ exports.onMessage = function(channelSettings, globalSettings, parameters) {
       });
       response.on('end', function() {
         var csv = str.split("\n")[1], say = "Issue ";
-        if(!csv) { return; }
+        if (!csv) { return; }
         csv = csv.substr(1,csv.length-2); /* Strip first and last quotemark */
         csv = csv.split('","');
         say += csv[0]+': '+csv[1]+'. '+'https://code.google.com/p/'+channelSettings['google-code-project']+'/issues/detail?id='+csv[0];

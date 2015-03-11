@@ -14,7 +14,7 @@
 var gha = require("github");
 
 exports.onLoad = function(channelSettings, globalSettings) {
-  if(!!global.GHA) /* We've already been called. */
+  if (!!global.GHA) /* We've already been called. */
     return;
 
   /* GitHub API Setup */
@@ -27,33 +27,33 @@ exports.onLoad = function(channelSettings, globalSettings) {
 };
 
 exports.onMessage = function(channelSettings, globalSettings, parameters) {
-  if(!parameters.message.match(/(^|\s)+(#(\d+)).*/))
+  if (!parameters.message.match(/(^|\s)+(#(\d+)).*/))
     return;
-  if(!channelSettings.user || !channelSettings.repo) {
+  if (!channelSettings.user || !channelSettings.repo) {
     /* Figure out what repo to use. If the repo came from the
      * JSON file, use that. If not, examine the channel topic
      * and try to find a GitHub URL. */ 
-    if(!!channelSettings['github-repo']) {
+    if (!!channelSettings['github-repo']) {
       channelSettings.githubUser = channelSettings['github-repo'].split('/')[0];
       channelSettings.githubRepo = channelSettings['github-repo'].split('/')[1];
     } else {
       var ghUrls = [], match, didUrl = false,
       pattern = /(https:\/\/github.com\/.+?)(\s|$)/g;
       while(match = pattern.exec(parameters.topic)) {
-        if(match[1] && (ghUrls.indexOf(match[1]) == -1)) {
+        if (match[1] && (ghUrls.indexOf(match[1]) == -1)) {
           ghUrls.push(match[1]);
         }
       }
-      for(var i in ghUrls) {
+      for (var i in ghUrls) {
         /* Remove any commas. */
         var url = ghUrls[i].split(',')[0].split('/');
         user = url[3]; /* user */
         repo = url[4]; /* repo */
-        if(!user || !repo) { continue; }
+        if (!user || !repo) { continue; }
         didUrl = true;
         break;
       }
-      if(!didUrl)
+      if (!didUrl)
         return;
     }
   }
@@ -61,22 +61,22 @@ exports.onMessage = function(channelSettings, globalSettings, parameters) {
   var issuePattern = /(^|\s)+((issue)?#(\d+))/g;
   var issues = [], match;
   while(match = issuePattern.exec(parameters.message)) {
-    if(!isNaN(match[4]) && (issues.indexOf(match[4]) == -1)) {
+    if (!isNaN(match[4]) && (issues.indexOf(match[4]) == -1)) {
       /* Add the issue that wasn't already in the list */
       issues.push(match[4]);
     }
   }
   
   /* Get issues using GitHub API. */
-  for(var i in issues) {
+  for (var i in issues) {
     global.GHA.issues.getRepoIssue(
       { user: channelSettings.githubUser, repo: channelSettings.githubRepo, number: issues[i] }, function(err, data) {
-        if(err != null) {
+        if (err != null) {
           console.log(err);
           return;
         }
         var str;
-        if(data.html_url.indexOf("/pull/") != -1)
+        if (data.html_url.indexOf("/pull/") != -1)
           str = "Pull ";
         else
           str = "Issue ";
