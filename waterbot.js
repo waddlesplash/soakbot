@@ -9,11 +9,10 @@
 // Catch-all for exceptions
 process.on('uncaughtException', function (err) {
   console.trace(err);
-}); 
+});
 
 var fs = require('fs');
 var irc = require("irc");
-var admin = require("./modules/admin.js");
 var config;
 
 /* Server list */
@@ -27,7 +26,7 @@ config = JSON.parse(config);
 /* Initiate: connect to all specified servers */
 for (var URL in config.networks) {
   var serverSettings = config.networks[URL];
-  startOnServer(serverSettings, URL, config.settings);  
+  startOnServer(serverSettings, URL, config.settings);
 }
 
 function startOnServer(serverSettings, serverURL, globalSettings) {
@@ -40,7 +39,7 @@ function startOnServer(serverSettings, serverURL, globalSettings) {
     floodProtectionDelay: 500,
     stripColors: true
   });
-  
+
   bot.addListener('registered', function(msg) {
     if("password" in serverSettings) {
       bot.send('NickServ', 'release', serverSettings.nick, serverSettings.password);
@@ -58,9 +57,6 @@ function startOnServer(serverSettings, serverURL, globalSettings) {
        (msg == "about") || (msg == "help")) {
       bot.say(channel, "I'm a modular NodeJS-based IRC bot. Operator(s): " + globalSettings.operators.join(', ') + ".");
       bot.say(userNick, 'Source code & issue tracker at https://github.com/waddlesplash/waterbot');
-    } else if(globalSettings.operators.indexOf(userNick) != -1) {
-      var parameters = {from: userNick, message: msg, channel: userNick, topic: '', bot: bot, nick: serverSettings.nick};
-      admin.onMessage(parameters);
     }
   });
   bot.addListener('nick', function(oldNick, newNick) {
@@ -78,13 +74,13 @@ function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
   if("ignored" in channelSettings) {
     channelSettings.ignored = channelSettings.ignored.toLowerCase().split(" ");
   }
-  
+
   bot.addListener('topic', function(chan, chanTopic, whoSetIt) {
     if(chan == channel) {
       topic = chanTopic;
     }
   });
-  
+
   var onMessage = function(from, msg) {
     if('ignored' in channelSettings) {
       for(var i in channelSettings.ignored) {
@@ -92,7 +88,7 @@ function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
           return;
       }
     }
-    
+
     var parameters = {from: from, message: msg, originalMessage: msg, channel: channel, topic: topic, bot: bot, nick: serverSettings.nick};
 
     if((msg == serverSettings.nick + ': about') ||
@@ -101,20 +97,18 @@ function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
       bot.say(channel, 'Source code & issue tracker at https://github.com/waddlesplash/waterbot');
       bot.say(channel, 'Enabled modules: ' + channelSettings.modules);
     } else {
-      if(globalSettings.operators.indexOf(from) != -1)
-        admin.onMessage(parameters);
       for(var i in modules)
         modules[i].onMessage(channelSettings, globalSettings, parameters);
     }
   };
-  
+
   /* Load the modules! */
   if(channelSettings.modules.length > 1) {
     var loadme = channelSettings.modules.split(" ");
     for(var i in loadme) {
       var module = require("./modules/" + loadme[i]);
       modules[loadme[i]] = module;
-      if("onLoad" in module) 
+      if("onLoad" in module)
         module.onLoad(channelSettings, globalSettings);
     }
   }
