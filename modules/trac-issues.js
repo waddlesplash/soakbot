@@ -1,4 +1,4 @@
-/* Waterbot -- Module "trac-issues"
+/* Soakbot -- Module "trac-issues"
  *   When you reference a Trac issue in a channel,
  *   it spits out the name and url of the issue.
  *

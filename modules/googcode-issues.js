@@ -1,4 +1,4 @@
-/* Waterbot -- Module "googcode-issues"
+/* Soakbot -- Module "googcode-issues"
  *   When you reference a Google Code issue in a channel, it spits out the
  *   name and url of the issue.
  *

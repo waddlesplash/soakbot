@@ -1,19 +1,29 @@
 {
-  "name" : "waterbot",
-  "description" : "A modular NodeJS-based IRC bot.",
-  "version" : "0.2.0",
-  "author" : "waddlesplash",
-  "repository" : {
-    "type" : "git",
-    "url" : "http://github.com/waddlesplash/waterbot.git"
+  "name": "soakbot",
+  "version": "0.3.0",
+  "description": "A modular NodeJS-based IRC bot.",
+  "main": "soakbot.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/waddlesplash/soakbot"
+  },
+  "keywords": [
+    "irc",
+    "bot"
+  ],
+  "author": "waddlesplash",
+  "license": "MIT",
+  "homepage": "https://github.com/waddlesplash/soakbot",
+  "engines": {
+    "node": "0.12.x",
+    "npm": "2.5.x"
   },
   "dependencies": {
-    "irc" : "~0.3.7",
-    "github": "~0.2.1",
-    "cheerio": "~0.17.0"
+    "cheerio": "^0.18.0",
+    "github": "^0.2.3",
+    "irc": "^0.3.9"
   },
-  "engines": {
-    "node": "0.10.x",
-    "npm":  "1.4.x"
+  "devDependencies": {
+    "shelljs": "^0.3.0"
   }
 }

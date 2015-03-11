@@ -1,4 +1,4 @@
-/* Waterbot -- Module "gci-tasks"
+/* Soakbot -- Module "gci-tasks"
  *   Spouts info about a Google Melange task when someone posts a URL to one.
  *
  * Copyright 2013 Puck Meerburg (puckipedia).

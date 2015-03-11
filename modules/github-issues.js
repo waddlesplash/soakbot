@@ -1,4 +1,4 @@
-/* Waterbot -- Module "github-issues"
+/* Soakbot -- Module "github-issues"
  *   When you reference a GitHub issue in a channel,
  *   it spits out the name and url of the issue.
  *

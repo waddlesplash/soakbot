@@ -1,8 +1,8 @@
-/* Waterbot - The Modular IRC Bot
+/* Soakbot - The Modular IRC Bot
  *   Sorta like Hubot, but for IRC and JavaScript
  *   instead of Campfire and CoffeeScript.
  *
- * Copyright 2013-2014 Augustin Cavalier (waddlesplash).
+ * Copyright 2013-2015 Augustin Cavalier <waddlesplash>.
  * Licensed under the MIT license.
  */
 
@@ -31,7 +31,7 @@ for (var URL in config.networks) {
 
 function startOnServer(serverSettings, serverURL, globalSettings) {
   var bot = new irc.Client(serverURL, serverSettings.nick, {
-    realName: 'https://github.com/waddlesplash/waterbot',
+    realName: 'https://github.com/waddlesplash/soakbot',
     port: 6697, /* IRC over SSL */
     autoRejoin: false, /* Allows bot to be kicked. */
     secure: true,
@@ -42,8 +42,8 @@ function startOnServer(serverSettings, serverURL, globalSettings) {
 
   bot.addListener('registered', function(msg) {
     if("password" in serverSettings) {
-      bot.send('NickServ', 'release', serverSettings.nick, serverSettings.password);
-      bot.send('NickServ', 'identify', serverSettings.nick, serverSettings.password);
+      bot.say("NickServ", "release " + serverSettings.nick + " " + serverSettings.password);
+      bot.say("NickServ", "identify " + serverSettings.nick + " " +  serverSettings.password);
     }
 
     for(var i in serverSettings.channels) {
@@ -56,7 +56,7 @@ function startOnServer(serverSettings, serverURL, globalSettings) {
     if((msg == serverSettings.nick + ': about') || (msg == serverSettings.nick + ': help') ||
        (msg == "about") || (msg == "help")) {
       bot.say(channel, "I'm a modular NodeJS-based IRC bot. Operator(s): " + globalSettings.operators.join(', ') + ".");
-      bot.say(userNick, 'Source code & issue tracker at https://github.com/waddlesplash/waterbot');
+      bot.say(userNick, 'Source code & issue tracker at https://github.com/waddlesplash/soakbot');
     }
   });
   bot.addListener('nick', function(oldNick, newNick) {
@@ -94,7 +94,7 @@ function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
     if((msg == serverSettings.nick + ': about') ||
       (msg == serverSettings.nick + ': help')) {
       bot.say(channel, "I'm a modular NodeJS-based IRC bot. Operator(s): " + globalSettings.operators.join(', ') + ".");
-      bot.say(channel, 'Source code & issue tracker at https://github.com/waddlesplash/waterbot');
+      bot.say(channel, 'Source code & issue tracker at https://github.com/waddlesplash/soakbot');
       bot.say(channel, 'Enabled modules: ' + channelSettings.modules);
     } else {
       for(var i in modules)

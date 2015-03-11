@@ -28,7 +28,7 @@ cp('-f', '*.*', 'heroku-build');
 
 cd('heroku-build'); {
   echo("Deleting ignored files...");
-  echo("worker: node waterbot.js\n").to("Procfile");
+  echo("worker: node soakbot.js\n").to("Procfile");
   rm("-rf", "node_modules");
   rm("*.json");
   cp("../package.json", ".");

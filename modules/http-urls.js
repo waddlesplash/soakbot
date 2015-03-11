@@ -1,4 +1,4 @@
-/* Waterbot -- Module "http-urls"
+/* Soakbot -- Module "http-urls"
  *   Spouts page title when someone posts a link.
  *
  * Copyright 2014 Augustin Cavalier (waddlesplash).
