@@ -42,9 +42,10 @@ cd('heroku-build'); {
   exec('git config user.email "heroku-install@localhost"');
   exec('git commit -m "Automated import for Heroku."');
 
-  var pushURL = "git@heroku.com:" + process.argv[2] + ".git";
-  echo("Force-pushing to " + pushURL + "...");
-  exec("git push --force " + pushURL + " master:master");
+  exec('heroku git:remote -a ' + process.argv[2]);
+
+  echo("Force-pushing to " + exec("git remote get-url heroku").stdout + "...");
+  exec("git push --force heroku master:master");
   echo("Done!");
 } cd('..');
 

@@ -15,8 +15,8 @@
   "license": "MIT",
   "homepage": "https://github.com/waddlesplash/soakbot",
   "engines": {
-    "node": "7.4.0",
-    "npm": "2.5.x"
+    "node": "^7.4.0",
+    "npm": "^4.0.5"
   },
   "dependencies": {
     "github": "^8.1.0",
