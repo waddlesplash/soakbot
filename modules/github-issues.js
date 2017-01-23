@@ -8,7 +8,7 @@
  * OPTIONS
  * ====================
  * "settings": "github-token", OAuth2 access token.
- * Per-channel: "github-repo": GitHub repository, e.g. "waddlesplash/waterbot".
+ * Per-channel: "github-repo": GitHub repository, e.g. "waddlesplash/soakbot".
  */
 
 var gha = require("github");
@@ -32,7 +32,7 @@ exports.onMessage = function(channelSettings, globalSettings, parameters) {
   if (!channelSettings.user || !channelSettings.repo) {
     /* Figure out what repo to use. If the repo came from the
      * JSON file, use that. If not, examine the channel topic
-     * and try to find a GitHub URL. */ 
+     * and try to find a GitHub URL. */
     if (!!channelSettings['github-repo']) {
       channelSettings.githubUser = channelSettings['github-repo'].split('/')[0];
       channelSettings.githubRepo = channelSettings['github-repo'].split('/')[1];
@@ -57,7 +57,7 @@ exports.onMessage = function(channelSettings, globalSettings, parameters) {
         return;
     }
   }
-  
+
   var issuePattern = /(^|\s)+((issue)?#(\d+))/g;
   var issues = [], match;
   while(match = issuePattern.exec(parameters.message)) {
@@ -66,7 +66,7 @@ exports.onMessage = function(channelSettings, globalSettings, parameters) {
       issues.push(match[4]);
     }
   }
-  
+
   /* Get issues using GitHub API. */
   for (var i in issues) {
     global.GHA.issues.getRepoIssue(

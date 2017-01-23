@@ -1,17 +1,15 @@
 {
   "settings": {
-    "github-token": "000000000000000000000000000000000000000",
-    "operators": ["waddlesplash", "wadlspl"]
+    "github-token": "000000000000000000000000000000000000000"
   },
   "networks": {
-    "card.freenode.net": {
-      "nick": "testingbot",
-      "password": "this field is optional, use it if you auth with NickServ",
-      "channels": [
-        {
-          "channel": "#somechannel",
-          "modules": "github-issues",
-          "github-repo": "mozilla/pdf.js"
+    "chat.freenode.net": {
+      "nick": "testbot",
+      "password": "nickserv_password",
+      "channels": [ {
+          "channel": "#example",
+          "modules": ["github-issues"],
+          "github-repo": "waddlesplash/soakbot"
         }
       ]
     }
