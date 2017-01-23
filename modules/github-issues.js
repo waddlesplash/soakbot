@@ -2,7 +2,7 @@
  *   When you reference a GitHub issue in a channel,
  *   it spits out the name and url of the issue.
  *
- * Copyright 2013-2014 Augustin Cavalier (waddlesplash).
+ * Copyright 2013-2017 waddlesplash.
  * Licensed under the MIT license.
  *
  * OPTIONS
@@ -69,8 +69,8 @@ exports.onMessage = function(channelSettings, globalSettings, parameters) {
 
   /* Get issues using GitHub API. */
   for (var i in issues) {
-    global.GHA.issues.getRepoIssue(
-      { user: channelSettings.githubUser, repo: channelSettings.githubRepo, number: issues[i] }, function(err, data) {
+    global.GHA.issues.get(
+      { owner: channelSettings.githubUser, repo: channelSettings.githubRepo, number: issues[i] }, function(err, data) {
         if (err != null) {
           console.log(err);
           return;

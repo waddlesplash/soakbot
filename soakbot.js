@@ -2,7 +2,7 @@
  *   Sorta like Hubot, but for IRC and JavaScript
  *   instead of Campfire and CoffeeScript.
  *
- * Copyright 2013-2015 Augustin Cavalier <waddlesplash>.
+ * Copyright 2013-2017 waddlesplash.
  * Licensed under the MIT license.
  */
 
@@ -21,6 +21,8 @@ if (!config) {
   process.exit(1);
 }
 config = JSON.parse(config);
+if (!config.settings)
+  config.settings = {};
 
 /* Initiate: connect to all specified servers */
 for (var URL in config.networks) {
@@ -40,13 +42,17 @@ function startOnServer(serverSettings, serverURL, globalSettings) {
     floodProtectionDelay: 500,
     stripColors: true
   });
+  if (!globalSettings.operators)
+    globalSettings.operators = [];
 
   bot.on('registered', function(msg) {
     if ("password" in serverSettings) {
       bot.say("NickServ", "release " + serverSettings.nick + " " + serverSettings.password);
       bot.say("NickServ", "identify " + serverSettings.nick + " " +  serverSettings.password);
       bot.send("NICK", serverSettings.nick);
-    }
+    } else {
+      serverSettings.nick = tempNick;
+	}
 
     for (var i in serverSettings.channels) {
       handleChannel(bot, serverSettings.channels[i], serverSettings, globalSettings);
