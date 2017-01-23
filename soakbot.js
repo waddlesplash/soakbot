@@ -11,12 +11,11 @@ process.on('uncaughtException', function (err) {
   console.trace(err);
 });
 
-var fs = require('fs');
-var irc = require("irc");
-var config;
+var fs = require('fs'),
+    irc = require("irc");
 
 /* Server list */
-config = fs.readFileSync('config.json', {'encoding': 'utf8'});
+var config = fs.readFileSync('config.json', {'encoding': 'utf8'});
 if (!config) {
   console.log("FATAL: No configuration file!");
   process.exit(1);
@@ -80,7 +79,10 @@ function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
 
   bot.join(channel);
   if ("ignored" in channelSettings) {
-    channelSettings.ignored = channelSettings.ignored.toLowerCase().split(" ");
+    var ignored = [];
+    for (var i in channelSettings.ignored)
+      ignored[i] = channelSettings.ignored[i].toLowerCase();
+    channelSettings.ignored = ignored;
   }
 
   bot.on('topic', function(chan, chanTopic, whoSetIt) {
@@ -111,14 +113,11 @@ function handleChannel(bot, channelSettings, serverSettings, globalSettings) {
   };
 
   /* Load the modules! */
-  if (channelSettings.modules.length > 1) {
-    var loadme = channelSettings.modules.split(" ");
-    for (var i in loadme) {
-      var module = require("./modules/" + loadme[i]);
-      modules[loadme[i]] = module;
-      if ("onLoad" in module)
-        module.onLoad(channelSettings, globalSettings);
-    }
+  for (var i in channelSettings.modules) {
+    var module = require("./modules/" + channelSettings.modules[i]);
+    modules[channelSettings.modules[i]] = module;
+    if ("onLoad" in module)
+      module.onLoad(channelSettings, globalSettings);
   }
 
   bot.on('message' + channel, onMessage);

@@ -1,10 +1,10 @@
-/* Waterbot - The Modular IRC Bot
+/* Soakbot - The Modular IRC Bot
  *   Sorta like Hubot, but for IRC and JavaScript
  *   instead of Campfire and CoffeeScript.
  *
  * Copyright 2013-2014 Augustin Cavalier (waddlesplash).
  * Licensed under the MIT license.
- * 
+ *
  * Install script to create and upload to a Heroku instance.
  * USAGE: npm install shelljs; node heroku-install name_of_herokuapp
  */
@@ -34,12 +34,14 @@ cd('heroku-build'); {
   cp("../package.json", ".");
   cp("../config.deployment.json", "./config.json");
   rm("heroku-install.js");
-  
+
   echo("Creating Git repository...");
   exec("git init .");
   exec("git add *");
-  exec('git commit -m "Automated import for Heroku." --author="heroku-install.js <heroku-install@localhost>"');
-  
+  exec('git config user.name "heroku-install.js"');
+  exec('git config user.email "heroku-install@localhost"');
+  exec('git commit -m "Automated import for Heroku."');
+
   var pushURL = "git@heroku.com:" + process.argv[2] + ".git";
   echo("Force-pushing to " + pushURL + "...");
   exec("git push --force " + pushURL + " master:master");
