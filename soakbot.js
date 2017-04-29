@@ -34,7 +34,7 @@ function startOnServer(serverSettings, serverURL, globalSettings) {
   var tempNick = "skbot" + Math.floor(Math.random()*1000);
   var bot = new irc.Client(serverURL, tempNick, {
     userName: 'soakbot',
-    realName: 'https://github.com/waddlesplash/soakbot',
+    realName: 'https://github.com/waddlesplash/soakbot v0.4.0',
     port: 6697, /* IRC over SSL */
     autoRejoin: false, /* Allows bot to be kicked. */
     secure: true,
@@ -52,7 +52,7 @@ function startOnServer(serverSettings, serverURL, globalSettings) {
       bot.send("NICK", serverSettings.nick);
     } else {
       serverSettings.nick = tempNick;
-	}
+    }
 
     for (var i in serverSettings.channels) {
       handleChannel(bot, serverSettings.channels[i], serverSettings, globalSettings);
@@ -75,7 +75,8 @@ function startOnServer(serverSettings, serverURL, globalSettings) {
   });
 
   bot.on('nick', function (oldNick, newNick) {
-    serverSettings.nick = newNick;
+    if (oldNick == serverSettings.nick)
+      serverSettings.nick = newNick;
   });
 }
 
